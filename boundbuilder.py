@@ -9,6 +9,8 @@ from PyPDF2 import PdfReader, PdfWriter
 from pathlib import Path
 import tkinter.messagebox as messagebox
 from increment import Increment
+import pdb
+import sys
 
 
 def mergePdfs(paths, output):
@@ -30,8 +32,25 @@ def mergePdfs(paths, output):
     """
     pdf_writer = PdfWriter()
     
-    for path in paths:
-        pdf_reader = PdfReader(path)
+    for path in paths[output]:
+        try:
+            pdf_reader = PdfReader(path)
+        except FileNotFoundError:
+            boundname = depathize(path)
+            
+            if path in paths:
+                mergePdfs(
+                    output=path,
+                    paths=paths
+                )
+                
+                pdf_reader = PdfReader(path)
+                #output.remove(boundname)
+            else:
+                #tb = sys.exception().__traceback__
+                raise FileNotFoundError(f"File {boundname}.pdf could not be found.")
+        
+        print(path)
         for page in range(len(pdf_reader.pages)):
             pdf_writer.add_page(pdf_reader.pages[page])
     
@@ -97,8 +116,12 @@ def configParser2(cfg, CWD):
         prevcbs = cbs
         cbs = pathize(curline, CWD)
         sets[cbs] = []
+        # if we are already inside of a bound set,
+        # append the name of the current file to
+        # the list of files to bind to the original
+        # set.
         if cbs >= 2:
-            sets[prevcbs].append(sets[cbs])
+            sets[prevcbs].append(cbs)
     elif curlinelvl == nextlinelvl:
         """
         curline
@@ -112,10 +135,16 @@ def configParser2(cfg, CWD):
         """
         sets[cbs].append(pathize(curline, CWD))
         cbs = prevcbs
+    
+    return sets
 
 
 def pathize(line, CWD):
     return CWD / (line.strip() + '.pdf')
+
+
+def depathize(path):
+    return path.parts[-1].replace('.pdf', '')
 
 
 def level(line: str) -> int:
@@ -137,9 +166,51 @@ def main():
     except RuntimeError as err:
         messagebox.showerror("Incorrect Input Structure", err)
         quit()
+
+    boundlist = []
     
+    for boundset in files.keys():
+        boundlist.append(boundset)
+    
+    for boundset in boundlist:
+        try:
+            mergePdfs(
+                output=boundset,
+                paths=files
+            )
+        except FileNotFoundError as err:
+            messagebox.showerror("Error!", err)
+    
+    """
     for boundset, mergers in files.items():
-        mergePdfs(mergers, boundset)
+        mergePdfs(output=boundset, paths=mergers)
+    """
+    
+    """
+    pdf_writer = PdfWriter()
+    
+    for path in path[output]:
+        try:
+            pdf_reader = PdfReader(path)
+        except FileNotFoundError:
+            boundname = depathize(path)
+            
+            if boundame in output:
+                mergePdfs(
+                    output=path,
+                    paths=paths
+                )
+                output.remove(boundname)
+            else:
+                raise FileNotFoundError
+            
+        for page in range(len(pdf_reader.pages)):
+            pdf_writer.add_page(pdf_reader.pages[page])
+    
+    with open(output, 'wb') as out:
+        pdf_writer.write(out)
+    """
 
 
-main()
+if __name__ == "__main__":
+    main()
