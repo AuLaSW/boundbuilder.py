@@ -8,6 +8,7 @@ PDF projects using pypdf2.
 from PyPDF2 import PdfReader, PdfWriter
 from pathlib import Path
 import tkinter.messagebox as messagebox
+from increment import Increment
 
 
 def mergePdfs(paths, output):
@@ -78,6 +79,56 @@ def configParser(cfg, CWD, sets):
             raise RuntimeError(f"The line \"{line.strip()}\" in .config is not correctly formatted.")
 
 
+def configParser2(cfg, CWD):
+    # dictionary of bound sets
+    sets = {}
+    
+    curline = cfg.readline()
+    nextline = cfg.readline()
+    
+    curlinelvl = level(curline)
+    nextlinelvl = level(nextline)
+    
+    if curlinelvl < nextlinelvl:
+        """
+        curline
+            nextline
+        """
+        prevcbs = cbs
+        cbs = pathize(curline, CWD)
+        sets[cbs] = []
+        if cbs >= 2:
+            sets[prevcbs].append(sets[cbs])
+    elif curlinelvl == nextlinelvl:
+        """
+        curline
+        nextline
+        """
+        sets[cbs].append(pathize(curline, CWD))
+    elif curlinelvl > nextlinelvl:
+        """
+            curline
+        nextline
+        """
+        sets[cbs].append(pathize(curline, CWD))
+        cbs = prevcbs
+
+
+def pathize(line, CWD):
+    return CWD / (line.strip() + '.pdf')
+
+
+def level(line: str) -> int:
+    accum = Increment()
+    for char in line:
+        if char == '\t':
+            +accum
+        else:
+            break
+    
+    return accum.value
+
+
 def main():
     CWD = Path.cwd()
     
@@ -91,5 +142,4 @@ def main():
         mergePdfs(mergers, boundset)
 
 
-if __name__ == "__main__":
-    main()
+main()
