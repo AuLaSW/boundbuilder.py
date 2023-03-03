@@ -58,23 +58,24 @@ def getConfig(CWD):
     sets = {}
     
     with open(config, 'r') as cfg:
-        for line in cfg:
-            # if the line has no whitespace around it
-            # (aka, it is not tabbed in)
-            if line.lstrip() == line:
-                # cbs = current bound set
-                cbs = CWD / (line.strip() + '.pdf')
-                # create a list to hold the paths
-                sets[cbs] = []
-            elif line.startswith("\t") or line.startswith("    "):
-                sets[cbs].append(CWD / (line.strip() + '.pdf'))
-            else:
-                raise RuntimeError(f"The line \"{line.strip()}\" in .config is not correctly formatted.")
+        configParser(cfg, CWD, sets)
     
     return sets
-    
-def configParser(file):
-    pass
+
+
+def configParser(cfg, CWD, sets):
+    for line in cfg:
+        # if the line has no whitespace around it
+        # (aka, it is not tabbed in)
+        if line.lstrip() == line:
+            # cbs = current bound set
+            cbs = CWD / (line.strip() + '.pdf')
+            # create a list to hold the paths
+            sets[cbs] = []
+        elif line.startswith("\t") or line.startswith("    "):
+            sets[cbs].append(CWD / (line.strip() + '.pdf'))
+        else:
+            raise RuntimeError(f"The line \"{line.strip()}\" in .config is not correctly formatted.")
 
 
 def main():
