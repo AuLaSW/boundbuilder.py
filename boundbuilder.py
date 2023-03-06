@@ -5,7 +5,8 @@ BoundBuilder Application
 This is a program designed by Austin Swanlaw to generate bound
 PDF projects using pypdf2.
 """
-from PyPDF2 import PdfReader, PdfWriter
+# from PyPDF2 import PdfReader, PdfWriter
+import pikepdf
 from pathlib import Path
 import tkinter.messagebox as messagebox
 from increment import Increment
@@ -56,6 +57,29 @@ def mergePdfs(paths, output):
     
     with open(output, 'wb') as out:
         pdf_writer.write(out)
+
+
+def mergePdfsPike(paths, output, pf):
+    pdf_writer = pikepdf.Pdf.new()
+    
+    for file in paths[output]:
+        print(file)
+        
+        if file in paths:
+            mergePdfsPike(
+                paths=paths,
+                output=file,
+                pf=pf
+            )
+            pf.remove(file)
+        
+        with pikepdf.Pdf.open(file) as pdf:
+            pdf_writer.pages.extend(pdf.pages)
+
+    #pdf_writer.remove_unreferenced_resources()
+    
+    pdf_writer.save(output)
+    pdf_writer.close()
 
 
 def getConfig(CWD):
@@ -167,19 +191,21 @@ def main():
         messagebox.showerror("Incorrect Input Structure", err)
         quit()
 
-    boundlist = []
+    processedfiles = []
     
     for boundset in files.keys():
-        boundlist.append(boundset)
+        processedfiles.append(boundset)
     
-    for boundset in boundlist:
-        try:
-            mergePdfs(
-                output=boundset,
-                paths=files
-            )
-        except FileNotFoundError as err:
-            messagebox.showerror("Error!", err)
+    for output in files.keys():
+        if output in processedfiles:
+            try:
+                mergePdfsPike(
+                    output=output,
+                    paths=files,
+                    pf=processedfiles
+                )
+            except FileNotFoundError as err:
+                messagebox.showerror("Error!", err)
     
     """
     for boundset, mergers in files.items():
