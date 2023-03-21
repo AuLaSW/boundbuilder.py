@@ -96,6 +96,12 @@ def parseArgs(argv):
     """
     Parse the arguments passed through the main function
     """
+    """
+    optionDict = {
+        "help": ["h", "help"],
+        "rotate": ["r:", "rotate="]
+    }
+    """
     options = "hr:"
     long_options = ["rotate="]
     
@@ -107,7 +113,8 @@ def parseArgs(argv):
     
     for opt, arg in opts:
         if opt == "-h":
-            pass
+            print(help.strip())
+            quit()
         if opt in ("-r", "--rotate"):
             optpass['rotate'] = int(arg)
     
@@ -194,6 +201,20 @@ class SMPLParser:
                 break
         
         return accum.value
+
+
+version = "v0.3.0-alpha"
+
+help = f"""
+BoundBuilder, {version}.
+
+bounbuilder.py [opts]
+
+Options:
+    h               help
+    r, --rotate     rotate each sheet in the set by 
+                    the value in degrees
+"""
 
 
 if __name__ == "__main__":
