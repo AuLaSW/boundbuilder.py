@@ -9,12 +9,12 @@ PDF projects using pypdf2.
 import pikepdf
 from pathlib import Path
 import tkinter.messagebox as messagebox
-from increment import Increment
+#from increment import Increment
 import pdb
-import sys
+import sys, getopt
 
 
-def mergePdfs(paths, output, pf):
+def mergePdfs(paths, output, pf, opts):
     pdf_writer = pikepdf.Pdf.new()
     
     for file in paths[output]:
@@ -24,12 +24,20 @@ def mergePdfs(paths, output, pf):
             mergePdfs(
                 paths=paths,
                 output=file,
-                pf=pf
+                pf=pf,
+                opts=opts
             )
             pf.remove(file)
         
         with pikepdf.Pdf.open(file) as pdf:
-            pdf_writer.pages.extend(pdf.pages)
+            for page in pdf.pages:
+                if opts['rotate'] != 0:
+                    page.rotate(
+                        angle=opts['rotate'],
+                        relative=False
+                    )
+                pdf_writer.pages.append(page)
+            #pdf_writer.pages.extend(pdf.pages)
 
     #pdf_writer.remove_unreferenced_resources()
     
@@ -52,7 +60,10 @@ def getConfig(CWD):
     -------
     Returns a set of paths for different bound sets.
     """
-    config = CWD / '.config'
+    config = CWD / '.smpl'
+    
+    if not config.exists():
+        config = CWD / '.config'
     
     sets = {}
     
@@ -81,8 +92,32 @@ def pathize(line, CWD):
     return CWD / (line.strip() + '.pdf')
 
 
-def main():
+def parseArgs(argv):
+    """
+    Parse the arguments passed through the main function
+    """
+    options = "hr:"
+    long_options = ["rotate="]
+    
+    optpass = {
+        "rotate": 0,
+    }
+    
+    opts, args = getopt.getopt(argv, options, long_options)
+    
+    for opt, arg in opts:
+        if opt == "-h":
+            pass
+        if opt in ("-r", "--rotate"):
+            optpass['rotate'] = int(arg)
+    
+    return optpass
+        
+
+def main(argv):
     CWD = Path.cwd()
+    
+    opts = parseArgs(argv)
     
     try:
         files = getConfig(CWD)
@@ -101,7 +136,8 @@ def main():
                 mergePdfs(
                     output=output,
                     paths=files,
-                    pf=processedfiles
+                    pf=processedfiles,
+                    opts=opts
                 )
             except FileNotFoundError as err:
                 messagebox.showerror("Error!", err)
@@ -161,4 +197,4 @@ class SMPLParser:
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
