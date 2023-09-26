@@ -11,7 +11,8 @@ from pathlib import Path
 import tkinter.messagebox as messagebox
 #from increment import Increment
 import pdb
-import sys, getopt
+import sys
+import getopt
 
 
 def mergePdfs(paths, output, pf, opts):
