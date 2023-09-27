@@ -5,19 +5,14 @@ BoundBuilder Application
 This is a program designed by Austin Swanlaw to generate bound
 PDF projects using pypdf2.
 """
-# from PyPDF2 import PdfReader, PdfWriter
-# from increment import Increment
-import pdb
 import pikepdf
-import time
 from pathlib import Path
-import tkinter.messagebox as messagebox
 import sys
 import getopt
 from utils import DropIns
 
 
-def merge_files(sheets: DropIns, name: str | list[str], opts):
+def bind(sheets: DropIns, name: list[str], opts):
     # take list FileName objects and generate the PDf associated with them
     pdf_writer = pikepdf.Pdf.new()
 
@@ -91,15 +86,15 @@ def main(argv):
     # pdb.set_trace()
     drop_files = DropIns(*file_inputs)
 
-    non_empty = list() 
+    non_empty = list()
     for key, value in drop_files.files.items():
         if len(value) > 0:
             # merge the pdfs into their sub bound sets
-            merge_files(drop_files, key, opts)
+            bind(drop_files, key, opts)
         if drop_files.proj_ord.config[key][0]:
             non_empty.append(key)
 
-    merge_files(drop_files, non_empty, opts)
+    bind(drop_files, non_empty, opts)
 
 
 version = "v0.4.0-alpha"
