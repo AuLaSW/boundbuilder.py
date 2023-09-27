@@ -12,7 +12,7 @@ import getopt
 from utils import DropIns
 
 
-def bind(sheets: DropIns, name: list[str], opts):
+def bind(sheets: DropIns, name: str | list[str], opts):
     # take list FileName objects and generate the PDf associated with them
     pdf_writer = pikepdf.Pdf.new()
 
@@ -21,31 +21,27 @@ def bind(sheets: DropIns, name: list[str], opts):
     if isinstance(name, list):
         bound_name = "BOUND SET.pdf"
         for key in name:
-            for sheet in sheets.files[key]:
-                with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
-                    for page in pdf.pages:
-                        if opts['rotate'] != 0:
-                            page.rotate(
-                                angle=opts['rotate'],
-                                relative=False
-                            )
-                        pdf_writer.pages.append(page)
+            __pdf_work(pdf_writer, key, sheets, opts)
     else:
-        for sheet in sheets.files[name]:
-            with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
-                for page in pdf.pages:
-                    if opts['rotate'] != 0:
-                        page.rotate(
-                            angle=opts['rotate'],
-                            relative=False
-                        )
-                    pdf_writer.pages.append(page)
+        __pdf_work(pdf_writer, name, sheets, opts)
 
     pdf_writer.save(sheets.base_path / bound_name)
     pdf_writer.close()
 
 
-def parseArgs(argv):
+def __pdf_work(writer, key, sheets, opts):
+    for sheet in sheets.files[key]:
+        with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
+            for page in pdf.pages:
+                if opts['rotate'] != 0:
+                    page.rotate(
+                        angle=opts['rotate'],
+                        relative=False
+                    )
+                writer.pages.append(page)
+
+
+def parse_args(argv):
     """
     Parse the arguments passed through the main function
     """
@@ -76,10 +72,10 @@ def parseArgs(argv):
 def main(argv):
     CWD = Path.cwd()
 
-    opts, file_inputs = parseArgs(argv)
+    opts, file_inputs = parse_args(argv)
 
     # here we will grab the files from the folder, only the PDFs
-    if len(file_inputs) == 0 and not (CWD / 'config.yaml').exists():
+    if not file_inputs:
         # grab all of the pdf files in the current working directory
         file_inputs = list(CWD.glob('*.pdf'))
 

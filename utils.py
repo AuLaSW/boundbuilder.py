@@ -121,22 +121,22 @@ class DropIns:
     """
 
     files: dict = dict()
-    base_path: PurePath
+    base_path: Path
     proj_ord: ProjectManager
     __file_type: str = '.pdf'
 
     def __init__(self, *args):
         assert len(args) > 1, "Please drop files onto the application."
 
-        self.base_path = PurePath(args[0]).parents[0]
+        self.base_path = Path(PurePath(args[0]).parents[0])
 
         temp_files = list()
 
         for file in args:
             file_name = PurePath(file).name
 
-            assert file_name.endswith(self.__file_type), \
-                "Must use files with the 'pdf' ending."
+            if not file_name.endswith(self.__file_type):
+                continue
 
             temp_files.append(FileName(file_name.removesuffix(self.__file_type)))
 
