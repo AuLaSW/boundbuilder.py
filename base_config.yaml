@@ -11,6 +11,8 @@ default:
     - S
   MECH: 
     - M
+  FIRE:
+    - F
   MP: 
     - MP
   PLUMB: 
@@ -18,12 +20,8 @@ default:
   ELEC: 
     - ES
     - E
-  SET: 
-    - ARCH
-    - MECH
-    - MP
-    - PLUMB
-    - ELEC
+  FIRE_SPRINK:
+    - FS
 default_w_civil:
   ARCH:
     - COVER
@@ -38,6 +36,8 @@ default_w_civil:
     - S
   MECH: 
     - M
+  FIRE:
+    - F
   MP: 
     - MP
   PLUMB: 
@@ -45,12 +45,8 @@ default_w_civil:
   ELEC: 
     - ES
     - E
-  SET: 
-    - ARCH
-    - MECH
-    - MP
-    - PLUMB
-    - ELEC
+  FIRE_SPRINK:
+    - FS
 default_w_landscaping:
   ARCH:
     - COVER
@@ -64,6 +60,8 @@ default_w_landscaping:
     - S
   MECH: 
     - M
+  FIRE:
+    - F
   MP: 
     - MP
   PLUMB: 
@@ -71,12 +69,8 @@ default_w_landscaping:
   ELEC: 
     - ES
     - E
-  SET: 
-    - ARCH
-    - MECH
-    - MP
-    - PLUMB
-    - ELEC
+  FIRE_SPRINK:
+    - FS
 default_w_LSC:
   ARCH:
     - COVER
@@ -90,6 +84,8 @@ default_w_LSC:
     - S
   MECH: 
     - M
+  FIRE:
+    - F
   MP: 
     - MP
   PLUMB: 
@@ -99,10 +95,5 @@ default_w_LSC:
     - E
   LSC:
     - LS-
-  SET: 
-    - ARCH
-    - MECH
-    - MP
-    - PLUMB
-    - ELEC
-    - LSC
+  FIRE_SPRINK:
+    - FS
