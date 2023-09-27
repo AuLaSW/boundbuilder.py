@@ -15,10 +15,13 @@ def trace():
     pass
 
 
+class ProjectManager:
+    pass
+
+
 if Path('testing.yaml').exists():
     with open('testing.yaml', 'r') as test_status:
         testing = yaml.safe_load(test_status)['status']
-        print(testing)
 
     if testing:
         from pdb import set_trace as trace
@@ -117,7 +120,9 @@ class DropIns:
     ## Methods
     """
 
-    files: list[FileName] = list()
+    files: dict = dict()
+    base_path: PurePath
+    proj_ord: ProjectManager
     __file_type: str = '.pdf'
 
     def __init__(self, *args):
@@ -125,27 +130,26 @@ class DropIns:
 
         self.base_path = PurePath(args[0]).parents[0]
 
+        temp_files = list()
+
         for file in args:
             file_name = PurePath(file).name
-            print(file_name)
 
             assert file_name.endswith(self.__file_type), \
                 "Must use files with the 'pdf' ending."
 
-            self.files.append(FileName(file_name.removesuffix(self.__file_type)))
+            temp_files.append(FileName(file_name.removesuffix(self.__file_type)))
 
-        self.proj_ord = ProjectOrdering(
+        self.proj_ord = ProjectManager(
                 bp=self.base_path,
-                names=self.files)
+                names=temp_files)
 
-    def order(self):
-        """Order the files dropped in based on the project config"""
-        return self.proj_ord.order(self.files)
+        self.files = self.proj_ord.order(temp_files)
 
 
-class ProjectOrdering:
+class ProjectManager:
     """
-    # ProjectOrdering
+    # ProjectManager
 
     Class that orders the incoming files based on project specifications.
     """
@@ -178,9 +182,8 @@ class ProjectOrdering:
         # if we are given names, guess the ordering
         elif isinstance(names, list):
             self.config = self.default_configs[
-                    ProjectOrdering.find_config(names)
+                    ProjectManager.find_config(names)
                     ]
-            print(self.config)
         # otherwise, grab the config from the config file
         else:
             config_path = bp.with_name('config.yaml')
@@ -209,14 +212,14 @@ class ProjectOrdering:
         # otherwise, return the default value
         return "default"
 
-    def order(self, names: list[FileName]):
+    def order(self, names: list[FileName]) -> dict():
         """Input the file names and sort them based on the config used"""
-        ordered_list: dict = dict()
+        ordered_dict: dict = dict()
         print("Organizing sheets...")
 
         for bound_set, sheet_order in self.config.items():
 
-            ordered_list[bound_set] = list()
+            ordered_dict[bound_set] = list()
 
             # add the names to the set
             for leader in sheet_order:
@@ -240,9 +243,9 @@ class ProjectOrdering:
                 # append the values from the temp list to the 
                 # ordered list dictionary
                 for value in temp:
-                    ordered_list[bound_set].append(value)
+                    ordered_dict[bound_set].append(value)
 
-        return ordered_list
+        return ordered_dict
 
 
 if __name__ == "__main__":

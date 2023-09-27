@@ -17,6 +17,39 @@ import getopt
 from utils import DropIns
 
 
+def merge_files(sheets: DropIns, name: str | list[str], opts):
+    # take list FileName objects and generate the PDf associated with them
+    pdf_writer = pikepdf.Pdf.new()
+
+    bound_name = f"BOUND {name}.pdf"
+
+    if isinstance(name, list):
+        bound_name = f"BOUND SET.pdf"
+        for key in name:
+            for sheet in sheets.files[key]:
+                with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
+                    for page in pdf.pages:
+                        if opts['rotate'] != 0:
+                            page.rotate(
+                                angle=opts['rotate'],
+                                relative=False
+                            )
+                        pdf_writer.pages.append(page)
+    else:
+        for sheet in sheets.files[name]:
+            with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
+                for page in pdf.pages:
+                    if opts['rotate'] != 0:
+                        page.rotate(
+                            angle=opts['rotate'],
+                            relative=False
+                        )
+                    pdf_writer.pages.append(page)
+
+    pdf_writer.save(sheets.base_path / bound_name)
+    pdf_writer.close()
+
+
 def mergePdfs(paths, output, pf, opts):
     pdf_writer = pikepdf.Pdf.new()
 
@@ -130,9 +163,9 @@ def main(argv):
 
     # the new way of doing it, where you can just drop files
     if len(file_inputs) > 0:
-        drop_files = DropIns(*file_inputs).order()
+        drop_files = DropIns(*file_inputs)
 
-        for key, value in drop_files.items():
+        for key, value in drop_files.files.items():
             print()
             print(key)
             print()
@@ -145,17 +178,28 @@ def main(argv):
         # grab all of the pdf files in the current working directory
         file_names = list(CWD.glob('*.pdf'))
 
-        pdb.set_trace()
-        drop_files = DropIns(*file_names).order()
+        # pdb.set_trace()
+        drop_files = DropIns(*file_names)
 
-        for key, value in drop_files.items():
+        """
+        for key, value in drop_files.files.items():
             print()
             print(key)
             print()
             for sheet in value:
                 print(sheet.full_name)
+        """
 
-        time.sleep(10)
+        non_empty = list() 
+        for key, value in drop_files.files.items():
+            if len(value) > 0:
+                # merge the pdfs into their sub bound sets
+                merge_files(drop_files, key, opts)
+            if drop_files.proj_ord.config[key][0]:
+                non_empty.append(key)
+
+        merge_files(drop_files, non_empty, opts)
+
     # the old method of doing it, where there is a config file in the folder
     else:
         files = getConfig(CWD)
