@@ -1,0 +1,108 @@
+default:
+  ARCH:
+    - COVER
+    - T
+    - X
+    - D
+    - S
+    - LS
+    - A
+  STRUC: 
+    - S
+  MECH: 
+    - M
+  MP: 
+    - MP
+  PLUMB: 
+    - P
+  ELEC: 
+    - ES
+    - E
+  SET: 
+    - ARCH
+    - MECH
+    - MP
+    - PLUMB
+    - ELEC
+default_w_civil:
+  ARCH:
+    - COVER
+    - T
+    - X
+    - C
+    - D
+    - S
+    - LS
+    - A
+  STRUC: 
+    - S
+  MECH: 
+    - M
+  MP: 
+    - MP
+  PLUMB: 
+    - P
+  ELEC: 
+    - ES
+    - E
+  SET: 
+    - ARCH
+    - MECH
+    - MP
+    - PLUMB
+    - ELEC
+default_w_landscaping:
+  ARCH:
+    - COVER
+    - T
+    - X
+    - D
+    - S
+    - LS
+    - A
+  STRUC: 
+    - S
+  MECH: 
+    - M
+  MP: 
+    - MP
+  PLUMB: 
+    - P
+  ELEC: 
+    - ES
+    - E
+  SET: 
+    - ARCH
+    - MECH
+    - MP
+    - PLUMB
+    - ELEC
+default_w_LSC:
+  ARCH:
+    - COVER
+    - T
+    - X
+    - D
+    - S
+    - LS
+    - A
+  STRUC: 
+    - S
+  MECH: 
+    - M
+  MP: 
+    - MP
+  PLUMB: 
+    - P
+  ELEC: 
+    - ES
+    - E
+  LSC:
+    - LS-
+  SET: 
+    - ARCH
+    - MECH
+    - MP
+    - PLUMB
+    - ELEC
+    - LSC
