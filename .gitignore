@@ -1,3 +1,7 @@
+# This is a comment
 /venv/*
 /binary/*
+# this is another comment
 /pdf/*
+__pycache__/*
+*/__pycache__/*
