@@ -5,19 +5,23 @@ Contains utilities needed for the boundbuilder application.
 """
 from pathlib import PurePath, Path
 import time
+import os
 import sys
 # requires oyaml
 import oyaml as yaml
 
-with open('testing.yaml', 'r') as test_status:
-    testing = yaml.safe_load(test_status)['status']
-    print(testing)
 
-if testing:
-    from pdb import set_trace as trace
-else:
-    def trace():
-        pass
+def trace():
+    pass
+
+
+if Path('testing.yaml').exists():
+    with open('testing.yaml', 'r') as test_status:
+        testing = yaml.safe_load(test_status)['status']
+        print(testing)
+
+    if testing:
+        from pdb import set_trace as trace
 
 
 class FileName:
@@ -119,10 +123,11 @@ class DropIns:
     def __init__(self, *args):
         assert len(args) > 1, "Please drop files onto the application."
 
-        self.base_path = PurePath(args[1]).parents[0]
+        self.base_path = PurePath(args[0]).parents[0]
 
-        for file in args[1:]:
+        for file in args:
             file_name = PurePath(file).name
+            print(file_name)
 
             assert file_name.endswith(self.__file_type), \
                 "Must use files with the 'pdf' ending."
@@ -145,7 +150,7 @@ class ProjectOrdering:
     Class that orders the incoming files based on project specifications.
     """
 
-    __base_config: Path = Path('base_config.yaml')
+    __base_config: Path = Path(os.path.dirname(__file__)) / 'base_config.yaml'
     config: dict = dict()
     default_configs: dict
 
