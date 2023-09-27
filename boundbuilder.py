@@ -24,7 +24,7 @@ def merge_files(sheets: DropIns, name: str | list[str], opts):
     bound_name = f"BOUND {name}.pdf"
 
     if isinstance(name, list):
-        bound_name = f"BOUND SET.pdf"
+        bound_name = "BOUND SET.pdf"
         for key in name:
             for sheet in sheets.files[key]:
                 with pikepdf.Pdf.open(sheets.base_path / (sheet.full_name + '.pdf')) as pdf:
@@ -48,84 +48,6 @@ def merge_files(sheets: DropIns, name: str | list[str], opts):
 
     pdf_writer.save(sheets.base_path / bound_name)
     pdf_writer.close()
-
-
-def mergePdfs(paths, output, pf, opts):
-    pdf_writer = pikepdf.Pdf.new()
-
-    for file in paths[output]:
-        print(file)
-
-        if file in paths:
-            mergePdfs(
-                paths=paths,
-                output=file,
-                pf=pf,
-                opts=opts
-            )
-            pf.remove(file)
-
-        with pikepdf.Pdf.open(file) as pdf:
-            for page in pdf.pages:
-                if opts['rotate'] != 0:
-                    page.rotate(
-                        angle=opts['rotate'],
-                        relative=False
-                    )
-                pdf_writer.pages.append(page)
-
-    pdf_writer.save(output)
-    pdf_writer.close()
-
-
-def getConfig(CWD: Path):
-    """
-    Params:
-    -------
-        CWD: a Path object containing the current working path.
-
-    Returns:
-    --------
-        sets: a dictionary of sets to combine, with keys being the
-              bound sets and items in a list being the files to bind.
-
-    Action:
-    -------
-    Returns a set of paths for different bound sets.
-    """
-    config = CWD / '.smpl'
-
-    if not config.exists():
-        config = CWD / '.config'
-
-    sets = dict()
-
-    with open(config, 'r') as cfg:
-        configParser(cfg, CWD, sets)
-
-    return sets
-
-
-def configParser(cfg, CWD, sets):
-    for line in cfg:
-        # if the line has no whitespace around it
-        # (aka, it is not tabbed in)
-        if line.lstrip() == line:
-            # cbs = current bound set
-            cbs = CWD / (line.strip() + '.pdf')
-            # create a list to hold the paths
-            sets[cbs] = []
-        elif line.startswith("\t") or line.startswith("    "):
-            sets[cbs].append(CWD / (line.strip() + '.pdf'))
-        else:
-            # raise RuntimeError(f"The line \"{line.strip()}\" in .config is not correctly formatted.")
-            err = RuntimeError(f"The line \"{line.strip()}\" in .config is not correctly formatted.")
-            messagebox.showerror("Incorrect Input Structure", err)
-            quit()
-
-
-def pathize(line, CWD):
-    return CWD / (line.strip() + '.pdf')
 
 
 def parseArgs(argv):
@@ -161,65 +83,23 @@ def main(argv):
 
     opts, file_inputs = parseArgs(argv)
 
-    # the new way of doing it, where you can just drop files
-    if len(file_inputs) > 0:
-        drop_files = DropIns(*file_inputs)
-
-        for key, value in drop_files.files.items():
-            print()
-            print(key)
-            print()
-            for sheet in value:
-                print(sheet.full_name)
-
-        time.sleep(10)
     # here we will grab the files from the folder, only the PDFs
-    elif len(file_inputs) == 0 and not (CWD / 'config.yaml').exists():
+    if len(file_inputs) == 0 and not (CWD / 'config.yaml').exists():
         # grab all of the pdf files in the current working directory
-        file_names = list(CWD.glob('*.pdf'))
+        file_inputs = list(CWD.glob('*.pdf'))
 
-        # pdb.set_trace()
-        drop_files = DropIns(*file_names)
+    # pdb.set_trace()
+    drop_files = DropIns(*file_inputs)
 
-        """
-        for key, value in drop_files.files.items():
-            print()
-            print(key)
-            print()
-            for sheet in value:
-                print(sheet.full_name)
-        """
+    non_empty = list() 
+    for key, value in drop_files.files.items():
+        if len(value) > 0:
+            # merge the pdfs into their sub bound sets
+            merge_files(drop_files, key, opts)
+        if drop_files.proj_ord.config[key][0]:
+            non_empty.append(key)
 
-        non_empty = list() 
-        for key, value in drop_files.files.items():
-            if len(value) > 0:
-                # merge the pdfs into their sub bound sets
-                merge_files(drop_files, key, opts)
-            if drop_files.proj_ord.config[key][0]:
-                non_empty.append(key)
-
-        merge_files(drop_files, non_empty, opts)
-
-    # the old method of doing it, where there is a config file in the folder
-    else:
-        files = getConfig(CWD)
-
-        processedfiles = []
-
-        for boundset in files.keys():
-            processedfiles.append(boundset)
-
-        for output in files.keys():
-            if output in processedfiles:
-                try:
-                    mergePdfs(
-                        output=output,
-                        paths=files,
-                        pf=processedfiles,
-                        opts=opts
-                    )
-                except FileNotFoundError as err:
-                    messagebox.showerror("Error!", err)
+    merge_files(drop_files, non_empty, opts)
 
 
 version = "v0.4.0-alpha"
