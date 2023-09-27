@@ -1,5 +1,6 @@
 default:
   ARCH:
+    - true
     - COVER
     - T
     - X
@@ -8,22 +9,30 @@ default:
     - LS
     - A
   STRUC: 
+    - false
     - S
   MECH: 
+    - true
     - M
   FIRE:
+    - true
     - F
   MP: 
+    - true
     - MP
   PLUMB: 
+    - true
     - P
   ELEC: 
+    - true
     - ES
     - E
   FIRE_SPRINK:
+    - true
     - FS
 default_w_civil:
   ARCH:
+    - true
     - COVER
     - T
     - X
@@ -33,22 +42,33 @@ default_w_civil:
     - LS
     - A
   STRUC: 
+    - false
     - S
+  CIVIL:
+    - true
+    - C
   MECH: 
+    - true
     - M
   FIRE:
+    - true
     - F
   MP: 
+    - true
     - MP
   PLUMB: 
+    - true
     - P
   ELEC: 
+    - true
     - ES
     - E
   FIRE_SPRINK:
+    - true
     - FS
 default_w_landscaping:
   ARCH:
+    - true
     - COVER
     - T
     - X
@@ -57,22 +77,30 @@ default_w_landscaping:
     - LS
     - A
   STRUC: 
+    - false
     - S
   MECH: 
+    - true
     - M
   FIRE:
+    - true
     - F
   MP: 
+    - true
     - MP
   PLUMB: 
+    - true
     - P
   ELEC: 
+    - true
     - ES
     - E
   FIRE_SPRINK:
+    - true
     - FS
 default_w_LSC:
   ARCH:
+    - true
     - COVER
     - T
     - X
@@ -81,19 +109,27 @@ default_w_LSC:
     - LS
     - A
   STRUC: 
+    - false
     - S
   MECH: 
+    - true
     - M
   FIRE:
+    - true
     - F
   MP: 
+    - true
     - MP
   PLUMB: 
+    - true
     - P
   ELEC: 
+    - true
     - ES
     - E
   LSC:
+    - true
     - LS-
   FIRE_SPRINK:
+    - true
     - FS

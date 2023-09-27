@@ -9,13 +9,12 @@ import sys
 # requires oyaml
 import oyaml as yaml
 
-testing = False
+with open('testing.yaml', 'r') as test_status:
+    testing = yaml.safe_load(test_status)['status']
+    print(testing)
 
 if testing:
-    import pdb
-
-    def trace():
-        pdb.set_trace
+    from pdb import set_trace as trace
 else:
     def trace():
         pass
@@ -160,6 +159,7 @@ class ProjectOrdering:
             "No base config file found, create base config in software directory."
 
         with open(self.__base_config, 'r') as base_config:
+            print("Loading default configs...")
             self.default_configs = yaml.safe_load(base_config)
 
         # if we are choosing a default config, do that
@@ -207,12 +207,17 @@ class ProjectOrdering:
     def order(self, names: list[FileName]):
         """Input the file names and sort them based on the config used"""
         ordered_list: dict = dict()
+        print("Organizing sheets...")
 
         for bound_set, sheet_order in self.config.items():
+
             ordered_list[bound_set] = list()
 
             # add the names to the set
             for leader in sheet_order:
+                # checking to make sure we are trying to work with the dictionary
+                if not isinstance(leader, str):
+                    continue
                 temp: list = list()
                 # add all of the names for this leader to the temp set
                 for name in names:
@@ -240,7 +245,10 @@ if __name__ == "__main__":
     order = drop.order()
 
     for key, value in order.items():
+        print()
+        print(key)
+        print()
         for sheet in value:
             print(sheet.full_name)
 
-    time.sleep(5)
+    time.sleep(10)
