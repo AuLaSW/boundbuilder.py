@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 import getopt
 from utils import DropIns
+import pdb
 
 
 def bind(sheets: DropIns, name: str | list[str], opts):
@@ -24,6 +25,8 @@ def bind(sheets: DropIns, name: str | list[str], opts):
             __pdf_work(pdf_writer, key, sheets, opts)
     else:
         __pdf_work(pdf_writer, name, sheets, opts)
+
+    print(f'Binding {bound_name}...')
 
     pdf_writer.save(sheets.base_path / bound_name)
     pdf_writer.close()
@@ -79,7 +82,7 @@ def main(argv):
         # grab all of the pdf files in the current working directory
         file_inputs = list(CWD.glob('*.pdf'))
 
-    # pdb.set_trace()
+    #pdb.set_trace()
     drop_files = DropIns(*file_inputs)
 
     non_empty = list()
@@ -91,6 +94,8 @@ def main(argv):
             non_empty.append(key)
 
     bind(drop_files, non_empty, opts)
+
+    input("Press any key to escape.")
 
 
 version = "v0.4.0-alpha"

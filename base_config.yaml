@@ -3,6 +3,7 @@ default:
     - true
     - COVER
     - T
+    - GS
     - X
     - D
     - S
@@ -37,6 +38,7 @@ default_w_civil:
     - true
     - COVER
     - T
+    - GS
     - X
     - C
     - D
@@ -75,6 +77,7 @@ default_w_landscaping:
     - true
     - COVER
     - T
+    - GS
     - X
     - D
     - S
@@ -109,6 +112,7 @@ default_w_LSC:
     - true
     - COVER
     - T
+    - GS
     - X
     - D
     - S

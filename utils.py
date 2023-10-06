@@ -19,12 +19,14 @@ class ProjectManager:
     pass
 
 
+"""
 if Path('testing.yaml').exists():
     with open('testing.yaml', 'r') as test_status:
         testing = yaml.safe_load(test_status)['status']
 
     if testing:
         from pdb import set_trace as trace
+"""
 
 
 class FileName:
@@ -128,6 +130,8 @@ class DropIns:
     def __init__(self, *args):
         assert len(args) > 1, "Please drop files onto the application."
 
+        print('Loading Sheets...')
+
         self.base_path = Path(PurePath(args[0]).parents[0])
 
         temp_files = list()
@@ -154,7 +158,8 @@ class ProjectManager:
     Class that orders the incoming files based on project specifications.
     """
 
-    __base_config: Path = Path(os.path.dirname(__file__)) / 'base_config.yaml'
+    # __base_config: Path = Path(os.path.dirname(__file__)) / 'base_config.yaml'
+    __base_config: Path = Path.home() / Path('AppData/Local/Programs/boundbuilder/base_config.yaml')
     config: dict = dict()
     default_configs: dict
 
@@ -165,7 +170,7 @@ class ProjectManager:
             "Must supply a base path for the drawings to ProjectOrdering."
 
         assert self.__base_config.exists(), \
-            "No base config file found, create base config in software directory."
+            f"No base config file found, create {self.__base_config}."
 
         with open(self.__base_config, 'r') as base_config:
             print("Loading default configs...")
