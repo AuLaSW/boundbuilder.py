@@ -8,12 +8,13 @@ PDF projects using pypdf2.
 import pikepdf
 from pathlib import Path
 import sys
+from datetime import datetime
 import getopt
 from utils import DropIns
 import pdb
 
 
-def bind(sheets: DropIns, name: str | list[str], opts):
+def bind(sheets: DropIns, name: str, opts):
     # take list FileName objects and generate the PDf associated with them
     pdf_writer = pikepdf.Pdf.new()
 
@@ -28,7 +29,17 @@ def bind(sheets: DropIns, name: str | list[str], opts):
 
     print(f'Binding {bound_name}...')
 
-    pdf_writer.save(sheets.base_path / bound_name)
+    try:
+        pdf_writer.save(sheets.base_path / bound_name)
+    except Exception:
+        print(f'Could not save {bound_name}, the file may be open.')
+        temp_bound_name = str(datetime.now().month) + str(datetime.now().day) + \
+            str(datetime.now().hour) + str(datetime.now().minute) + \
+            str(datetime.now().second) + '-' + bound_name
+        print(f'Saving as {temp_bound_name}')
+
+        pdf_writer.save(sheets.base_path / temp_bound_name)
+
     pdf_writer.close()
 
 
