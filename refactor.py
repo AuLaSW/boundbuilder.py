@@ -45,6 +45,7 @@ class Config:
         self.path = kwargs['path'] or self.default_path
 
         self.file: Path = self.path / self.name
+        self.default_file: Path = self.default_path / self.default_name
 
         self.__load_config(**kwargs)
 
@@ -52,12 +53,12 @@ class Config:
         if kwargs['config']:
             self.config = kwargs['config']
         # search for config file in project folder
-        elif self.file.is_file() and not self.file.samefile(self.default_path / self.default_name):
+        elif self.file.is_file() and self.default_file.is_file() and not self.file.samefile(self.default_file):
             with open(self.file, 'r') as load_config:
                 self.config = yaml.safe_load(load_config)
         # search for config file in default location
-        elif (self.default_path / self.default_name).is_file():
-            with open(self.default_path / self.default_name, 'r') as load_config:
+        elif self.default_file.is_file():
+            with open(self.default_file, 'r') as load_config:
                 self.config = yaml.safe_load(load_config)
         # if no config is found, then do not load config
         else:
