@@ -23,7 +23,11 @@ class Config:
     """
     name: str = None
     path: Path = None
+    file: Path = None
+    default_name: str = 'base_config.yaml'
+    default_path: Path = Path.home() / Path('AppData/Local/Programs/boundbuilder')
     config: dict = None
+    # whether the config object found the config or not
     has_config: bool = True
 
     def __init__(self, **kwargs):
@@ -37,23 +41,28 @@ class Config:
             config: dict
             has_config: bool
         """
-        self.name = kwargs['name'] or 'base_config.yaml'
-        self.path = kwargs['path'] or \
-            Path.home() / Path('AppData/Local/Programs/boundbuilder')
+        self.name = kwargs['name'] or self.default_name
+        self.path = kwargs['path'] or self.default_path
 
-        file: Path = self.path / self.name
+        self.file: Path = self.path / self.name
 
-        if file.is_file() and not kwargs['config']:
-            with open(file, 'r') as load_config:
-                self.config = yaml.safe_load(load_config)
-        elif kwargs['config']:
+        self.__load_config(**kwargs)
+
+    def __load_config(self, **kwargs):
+        if kwargs['config']:
             self.config = kwargs['config']
+        # search for config file in project folder
+        elif self.file.is_file():
+            with open(self.file, 'r') as load_config:
+                self.config = yaml.safe_load(load_config)
+        # search for config file in default location
+        elif (self.default_path / self.default_name).is_file():
+            with open(self.default_path / self.default_name, 'r') as load_config:
+                self.config = yaml.safe_load(load_config)
+        # if no config is found, then do not load config
         else:
             print('No config found.')
             self.has_config = False
-
-    def __get_config(self):
-        pass
 
     @classmethod
     def map(cls, obj: object, transform: callable, *args):
