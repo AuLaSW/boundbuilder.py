@@ -52,7 +52,7 @@ class Config:
         if kwargs['config']:
             self.config = kwargs['config']
         # search for config file in project folder
-        elif self.file.is_file():
+        elif self.file.is_file() and not self.file.samefile(self.default_path / self.default_name):
             with open(self.file, 'r') as load_config:
                 self.config = yaml.safe_load(load_config)
         # search for config file in default location
@@ -160,11 +160,21 @@ class FileName:
 
 
 class Project:
-    base_path: Path
+    base_path: Path = None
     files: dict = dict()
-    __file_type: str = '.pdf'
+    __file_type: str = None
+    has_files: bool = True
 
-    def __init__(self, **kwargs):
+    def __init__(self, *files, **kwargs):
+        if len(files) < 1:
+            print("Please inputs files into the executable.")
+            self.has_files = False
+        else:
+            print('Loading sheets...')
+
+        # grab the base path of where the file is called from.
+        self.base_path = Path(PurePath(files[0]).parents[0])
+
         self.config = Config(
             **{
                 'name': kwargs['config_name'] or None,
