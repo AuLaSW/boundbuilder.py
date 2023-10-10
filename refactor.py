@@ -14,9 +14,17 @@ Monadic Implemenation
 
 
 class Config:
+    """
+    # Manage loading the config. Monadic type.
+
+    ## Methods:
+        - __init__(self, **kwargs)
+        - map(obj, tranform, *args)
+    """
     name: str = None
     path: Path = None
     config: dict = None
+    has_config: bool = True
 
     def __init__(self, **kwargs):
         """ Wrapper for the Config monad type
@@ -34,15 +42,27 @@ class Config:
 
         file: Path = self.path / self.name
 
-        if file.is_file():
+        if file.is_file() and not kwargs['config']:
             # define self.config
             with open(file, 'r') as load_config:
                 self.config = yaml.safe_load(load_config)
+        elif kwargs['config']:
+            self.config = kwargs['config']
         else:
             print('No config found.')
+            self.has_config = False
 
-    def map(self, obj: object, trasnform: callable, *ags):
-        pass
+    @classmethod
+    def map(cls, obj: object, transform: callable, *args):
+        if obj.has_config:
+            name, path, config = transform(obj, *args)
+        else:
+            return obj
+        return Config(
+            name=name,
+            path=path,
+            config=config,
+        )
 
 
 class DropIns:
