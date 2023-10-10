@@ -44,7 +44,6 @@ class Config:
         file: Path = self.path / self.name
 
         if file.is_file() and not kwargs['config']:
-            # define self.config
             with open(file, 'r') as load_config:
                 self.config = yaml.safe_load(load_config)
         elif kwargs['config']:
@@ -52,6 +51,9 @@ class Config:
         else:
             print('No config found.')
             self.has_config = False
+
+    def __get_config(self):
+        pass
 
     @classmethod
     def map(cls, obj: object, transform: callable, *args):
