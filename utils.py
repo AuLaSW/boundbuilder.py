@@ -144,9 +144,24 @@ class DropIns:
 
             temp_files.append(FileName(file_name.removesuffix(self.__file_type)))
 
+        conf_path = Path(PurePath(args[1]).parents[0]) / 'config.yaml'
+
+        if conf_path.is_file():
+            print('Loading custom config...')
+            try:
+                with open(conf_path, 'r') as load_config:
+                    conf = yaml.safe_load(load_config)
+            except Exception as e:
+                print(e)
+                conf = None
+        else:
+            conf = None
+
         self.proj_ord = ProjectManager(
-                bp=self.base_path,
-                names=temp_files)
+            bp=self.base_path,
+            names=temp_files,
+            conf=conf
+        )
 
         self.files = self.proj_ord.order(temp_files)
 

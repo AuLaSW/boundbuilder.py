@@ -93,7 +93,7 @@ def main(argv):
         # grab all of the pdf files in the current working directory
         file_inputs = list(CWD.glob('*.pdf'))
 
-    #pdb.set_trace()
+    pdb.set_trace()
     drop_files = DropIns(*file_inputs)
 
     non_empty = list()
