@@ -35,6 +35,7 @@ class Config:
 
         Data Fields:
             config: dict
+            has_config: bool
         """
         self.name = kwargs['name'] or 'base_config.yaml'
         self.path = kwargs['path'] or \
@@ -58,6 +59,7 @@ class Config:
             name, path, config = transform(obj, *args)
         else:
             return obj
+
         return Config(
             name=name,
             path=path,
