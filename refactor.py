@@ -67,6 +67,82 @@ class Config:
         )
 
 
-class DropIns:
-    def __init__(self):
-        pass
+class FileName:
+    """
+    # Class FileName
+
+    Records the filename and gives some properties to manipulate it.
+    """
+
+    def __init__(self, name):
+        self.full_name = name
+
+        self.leader = FileName.__sep_leader(name)
+        self.major_num = FileName.__sep_major_num(name)
+        self.minor_num = FileName.__sep_minor_num(name)
+        self.minor_alpha = FileName.__sep_minor_alph(name)
+        self.rev = FileName.__sep_rev(name)
+
+    @classmethod
+    def __sep_leader(cls, name: str):
+        temp = str()
+
+        for char in name:
+            if not char.isdigit():
+                temp += (char)
+            else:
+                break
+
+        return temp
+
+    @classmethod
+    def __sep_major_num(cls, name: str):
+        temp = str()
+
+        for char in name:
+            if char.isdigit():
+                temp += (char)
+            elif char == '.':
+                break
+
+        return temp
+
+    @classmethod
+    def __sep_minor_num(cls, name: str):
+        temp = str()
+        after_delim = False
+
+        for char in name:
+            if char.isdigit() and after_delim:
+                temp += (char)
+            elif after_delim and not char.isdigit():
+                break
+            elif char == '.':
+                after_delim = True
+
+        return temp
+
+    @classmethod
+    def __sep_minor_alph(cls, name: str):
+        temp = str()
+
+        for char in name:
+            if char.isdigit():
+                temp += (char)
+            elif char == '.':
+                break
+
+        return temp
+
+    @classmethod
+    def __sep_rev(cls, name: str):
+        temp = str()
+        after_delim = False
+
+        for char in name:
+            if char.isalpha() and after_delim:
+                temp += (char)
+            elif char == '.':
+                after_delim = True
+
+        return temp
