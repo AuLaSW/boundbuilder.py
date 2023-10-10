@@ -1,7 +1,7 @@
 """
 Refactor.py
 
-A temporary file for refactoring the classes and methods within boudnbuilder.
+A temporary file for refactoring the classes and methods within boundbuilder.
 """
 from pathlib import PurePath, Path
 import sys
@@ -146,3 +146,17 @@ class FileName:
                 after_delim = True
 
         return temp
+
+
+class Project:
+    base_path: Path
+    files: dict = dict()
+    __file_type: str = '.pdf'
+
+    def __init__(self, **kwargs):
+        self.config = Config(
+            **{
+                'name': kwargs['config_name'] or None,
+                'path': kwargs['config_path'] or None
+             }
+        )
